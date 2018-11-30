@@ -1,11 +1,5 @@
-const state = ()=>({
+const state = ()=>{
   position: {}
-})
-
-const mutations = {
-  setPosition(state, val) {
-    state.position = val
-  }
 }
 
 const actions = {
@@ -14,10 +8,16 @@ const actions = {
   }
 }
 
+const mutations = {
+  setPosition(state, val) {
+    state.position = val
+  }
+}
+
 
 export default {
   namespaced: true,
   state,
-  mutations,
-  actions
+  actions,
+  mutations
 }
