@@ -1,7 +1,9 @@
 // 城市服务相关接口
 
-import Router from "koa-router"
-import axios from "./utils/axios"
+import Router from 'koa-router'
+import axios from './utils/axios'
+import Config from '../dbs/config'
+// import Province from '../dbs/models/province'
 
 let router = new Router({
   prefix: "/geo"
@@ -30,6 +32,41 @@ router.get('/getPosition', async (ctx)=>{
     }
 })
 
+router.get('/menu', async (ctx)=>{
+  // const result = await Menu.findOne()
+  // ctx.body = {
+  //   menu: result.menu
+  // }
+  let {status,
+  	data: {menu}} = await axios.get(`${Config.requestUrl}/geo/menu?sign=${sign}`)
+  ctx.body = {
+    menu: status === 200
+      ? menu
+      : []
+  }
+})
+
+router.get('/province', async (ctx)=>{
+  // let province = await Province.find();
+  // console.log(province);
+  // ctx.body = {
+  //   province: province.map(item => {
+  //     return {
+  //       id: item.id,
+  //       name: item.value[0]
+  //     }
+  //   })
+  // }
+
+  let {status, data: {province}} = await axios.get(`${Config.requestUrl}/geo/province?sign=${sign}`)
+  ctx.body = {
+    province:status === 200 ? province : []
+  }
+})
+
+router.get('/province/:id', async (ctx)=>{
+
+})
 
 
 export default router;

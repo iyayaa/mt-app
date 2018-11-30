@@ -1,6 +1,6 @@
-const state = ()=>{
+const state = ()=>({
   position: {}
-}
+})
 
 const actions = {
   setPosition: ({commit}, position)=>{
