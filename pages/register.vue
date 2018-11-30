@@ -77,6 +77,7 @@
   </div>
 </template>
 <script>
+  import CryptoJs from "crypto-js"
   export default {
   	data(){
   		return {
@@ -134,6 +135,7 @@
           return false
         }
         this.$refs['ruleForm'].validateField("name", (valid)=>{
+          // 有值表示错误
           namePass = valid
         })
         this.statusMsg = ''
@@ -149,7 +151,7 @@
             email:this.ruleForm.email,
           }).then(({status, data})=>{
             if(status === 200 && data && data.code === 0) {
-              let count=60;
+              let count=180;
               this.statusMsg = `验证码已发送，剩余${count--}秒`
               this.timerid = setInterval(()=>{
                 this.statusMsg = `验证码已发送，剩余${count--}秒`
@@ -165,8 +167,34 @@
         }
       },
       register(){
-
-      }
+        this.$refs["ruleForm"].validate((valid)=>{
+          if(valid) {
+            this.$axios.post("/users/signup", {
+              username: window.encodeURIComponent(this.ruleForm.name),
+              password: CryptoJs.MD5(this.ruleForm.pwd).toString(),
+              email: this.ruleForm.email,
+              code: this.ruleForm.code
+            })
+              .then(({status, data})=>{
+                if(status === 200)
+                {
+                  if(data && data.code === 0) {
+                    location.href = "/login"
+                  } else {
+                    this.error = data.msg
+                  }
+                }
+                else
+                {
+                  this.error = `服务器出错，错误码:${status}`
+                }
+                setTimeout(()=>{
+                  this.error = "";
+                }, 1500)
+              })
+          }
+        })
+      },
     }
   }
 </script>
