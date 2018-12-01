@@ -10,20 +10,14 @@
           <button class="el-button el-button--primary"><i class="el-icon-search"/></button>
           <dl class="hotPlace" v-if="isHotPlace" >
             <dt>热门搜索</dt>
-            <dd >牛肉猪大肠</dd>
-            <dd >牛肉猪大肠</dd>
-            <dd >牛肉猪大肠</dd>
+            <dd v-for="item in hotPlace">{{item.name}}</dd>
           </dl>
           <dl class="searchList" v-if="isSearchList">
-            <dd >巧克力</dd>
-            <dd >巧克力</dd>
-            <dd >巧克力</dd>
+            <dd v-for="item in searchList">{{item.name}}</dd>
           </dl>
         </div>
-        <p class="suggest">
-          <a href="#" >周边七日游</a>
-          <a href="#" >周边七日游</a>
-          <a href="#" >周边七日游</a>
+        <p class="suggest" >
+          <a href="#" v-for="item in hotPlace" >{{item.name}}</a>
         </p>
         <ul class="nav">
           <li>
@@ -61,13 +55,14 @@
 </template>
 
 <script>
+  import lodash from 'lodash';
   
   export default {
     data () {
       return {
         searchKey:'',
         isFocus: false, 
-        hotPlace: [], 
+        hotPlace: this.$store.state.home.hotPlace.slice(0, 5), 
         searchList: [],
       }
     },
@@ -78,9 +73,19 @@
       inputBlur(){
         this.isFocus = false
       },
-      searchInput (){
-
-      },
+      searchInput: 
+        // 获取与当前输入相关的热门搜索列表
+        lodash.debounce(async function(){
+          let city = this.$store.state.geo.position.city.replace('市', '')
+          this.searchList = []
+          let {status, data: {top}} = await this.$axios.get('/search/top', {
+            params: {
+              input: this.searchKey,
+              city
+            }
+          })
+          this.searchList = top.slice(0, 10)
+        },300)
     },
     computed:{
       isHotPlace (){
