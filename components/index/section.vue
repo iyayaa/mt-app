@@ -44,49 +44,18 @@
   </section>
 </template>
 <script>
+
 export default {
   data () {
     return {
       kind: 'all',
-      list: {
-        all: [
-          {
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店33333333",
-            pos: "酒店套餐",
-            price: 39856
-          }
-        ],
-        part: [{
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店",
-            pos: "酒店套餐111111111",
-            price: 39
-          }],
-        spa: [{
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店",
-            pos: "酒店套餐444444",
-            price: 398
-          },{
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店",
-            pos: "酒店套餐6666666",
-            price: 398
-          }],
-        movie: [{
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店",
-            pos: "酒店套餐77",
-            price: 398
-          }],
-        travel: [{
-            img: "//p0.meituan.net/hotel/01b1941a2e0bf25aed72f69b39e2298c362774.png@368w_208h_1e_1c",
-            title: "东方之家酒店",
-            pos: "酒店套餐88",
-            price: 398
-          }]
-      }
+      list:{
+        all:[],
+        part: [],
+        spa: [],
+        movie: [],
+        travel: [],
+      },
     }
   },
   computed: {
@@ -96,16 +65,53 @@ export default {
   },
   methods: {
     over (e) {
-      let dom = e.target
-      let tag = dom.tagName.toLowerCase()
-      let self = this
-      if (tag === 'dd') {
-        this.kind = dom.getAttribute('kind')
-        let keyword = dom.getAttribute('keyword')
-        this.list[this.kind]=this.list[this.kind]
+      if(this.timer){
+        clearTimeout(this.timer)
       }
-    }
+      
+      let dom = e.target
+
+      this.timer = setTimeout(()=>{
+        let tag = dom.tagName.toLowerCase()
+        if (tag === 'dd') {
+          let keyword = dom.getAttribute('keyword')
+          let newKind = dom.getAttribute('kind')
+          this.getResultList(keyword,newKind)
+        }
+      },100)
+      
+    },
+    async getResultList(keyword,kind){
+      let {status, data:{count, pois}} = await this.$axios.get('/search/resultsByKeywords', {
+        params: {
+          keyword,
+          city: this.$store.state.geo.position.city
+        }
+      })
+      if(status === 200 && count > 0) {
+        let r = pois.filter((item)=>item.photos.length)
+        .map((item, index)=>{
+          return {
+            title: item.name,
+            pos: item.type.split(';')[0],
+            price: item.biz_ext.cost || '暂无',
+            img: item.photos[0].url,
+            url: '//abc.com'
+          }
+        })
+        this.kind = kind
+        this.list[this.kind]=r.slice(0,9);
+      }
+      else{
+        this.kind = kind
+        this.list[this.kind]= [];
+      }
+    },
   },
+  mounted(){
+    this.getResultList('景点',this.kind)
+  },
+
 
 }
 </script>

@@ -78,6 +78,20 @@ router.get('/hotPlace', async (ctx) => {
   }
 })
 
-
+// 首页section接口
+router.get('/resultsByKeywords', async (ctx)=>{
+  const {city, keyword} = ctx.query;
+  let {status, data:{count, pois}} = await axios.get(`${Config.requestUrl}/search/resultsByKeywords`, {
+    params: {
+      city,
+      keyword,
+      sign:Config.sign
+    }
+  })
+  ctx.body = {
+    count: status === 200 ? count : 0,
+    pois: status === 200 ? pois: []
+  }
+})
 
 export default router
