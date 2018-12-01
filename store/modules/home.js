@@ -4,9 +4,11 @@ const state = () => ({
 })
 
 const actions = {
+  // 左侧列表
   setMenu: ({commit}, menu) => {
     commit('setMenu', menu)
   },
+  // 景区热门搜索
   setHotPlace: ({commit}, hotPlace) => {
     commit('setHotPlace', hotPlace)
   }
