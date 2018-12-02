@@ -11,7 +11,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="24">3
+      <el-col :span="24">
+        <categroyCity/>
       </el-col>
     </el-row>
   </div>
@@ -20,11 +21,13 @@
 <script>
   import selectCity from '@/components/changeCity/selectCity'
   import hotCity from '@/components/changeCity/hotCity.vue'
+  import categroyCity from '@/components/changeCity/categroyCity.vue'
 
   export default {
     components:{
       selectCity,
-      hotCity
+      hotCity,
+      categroyCity
     },
   }
 </script>
