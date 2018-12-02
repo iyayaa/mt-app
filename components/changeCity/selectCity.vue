@@ -20,6 +20,8 @@
         :label="item.label"
         :value="item.value"/>
     </el-select>
+    <span class="name">
+    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;直接搜索：</span>
     <el-autocomplete
       v-model="input"
       :fetch-suggestions="querySearchAsync"
@@ -30,6 +32,7 @@
 </template>
 
 <script>
+  import _ from 'lodash'
 
   export default {
   	data(){
@@ -39,11 +42,31 @@
   			cityVal:'',
 			cityOpt:[],
 			input:'',
+			allCities:[]
   		}
   	},
   	methods:{
-  		handleSelect(){},
-  		querySearchAsync(){},
+  		handleSelect(item) {
+          console.log(item.value)
+          // TODO:1 跳转到首页 2修改地区
+        },
+  		querySearchAsync:
+  			_.debounce(async function(query,cb) {
+  			  if(this.allCities.length){
+			      cb(this.allCities.filter(item => item.value.indexOf(query)>-1))
+			  }else{
+			    let {status,data:{city}}=await this.$axios.get('/geo/city')
+			    if(status===200){
+			      this.allCities=city.map(item=>{return {
+			        value:item.name
+			      }})
+			      cb(this.allCities.filter(item => item.value.indexOf(query)>-1))
+			    }else{
+			      cb([])
+			    }
+			  }
+  			},200),
+
   	},
   	async mounted(){
   		let {status,data:{province}} = await this.$axios.get('/geo/province')
@@ -68,7 +91,7 @@
 		        })
 		        this.cityVal = ''
 	        }
-  		}
+  		},
   	},
   }
 </script>
