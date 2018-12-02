@@ -6,7 +6,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="24">2
+      <el-col :span="24">
+        <hot-city/>
       </el-col>
     </el-row>
     <el-row>
@@ -18,10 +19,12 @@
 
 <script>
   import selectCity from '@/components/changeCity/selectCity'
+  import hotCity from '@/components/changeCity/hotCity.vue'
 
   export default {
     components:{
-      selectCity
+      selectCity,
+      hotCity
     },
   }
 </script>
