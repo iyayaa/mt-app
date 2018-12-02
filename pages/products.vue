@@ -5,7 +5,8 @@
 		<categroy :types="types" :areas="areas"/>
 		<list :list="list"/>
     </el-col>
-    <el-col :span="5">2
+    <el-col :span="5">
+    	<amap v-if="point.length" :width="230" :height="290" :point="point"/>
     </el-col>
   </el-row>
 </template>
@@ -15,6 +16,7 @@
 import Crumbs from '@/components/products/crumbs.vue'
 import Categroy from '@/components/products/categroy.vue'
 import List from '@/components/products/list.vue'
+import Amap from '@/components/public/map.vue'
 
 
   export default {
@@ -22,6 +24,7 @@ import List from '@/components/products/list.vue'
 	  Crumbs,
 	  Categroy,
 	  List,
+	  Amap,
 	},
 	data(){
       return {
@@ -29,6 +32,7 @@ import List from '@/components/products/list.vue'
         types:[],
         areas:[],
         list:[],
+        point:[],
       }
     },
     async asyncData(ctx){
@@ -65,6 +69,7 @@ import List from '@/components/products/list.vue'
 	        keyword,
 	        areas: areas.filter(item=>item.type!=='').slice(0,5),
 	        types: types.filter(item=>item.type!=='').slice(0,5),
+	        point: (pois.find(item=>item.location).location||'').split(',')
 	      }
 	    }
 	},
